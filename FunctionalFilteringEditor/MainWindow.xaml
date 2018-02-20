@@ -6,7 +6,12 @@
         xmlns:local="clr-namespace:FunctionalFilteringEditor"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <Canvas  Name="canvas" MouseRightButtonDown="canvas_MouseRightButtonDown" Margin="36">
+        <Canvas.Background>
+            <SolidColorBrush Color="White" Opacity="0"/>
+        </Canvas.Background>
+        <Canvas.LayoutTransform>
+            <ScaleTransform ScaleX="1" ScaleY="-1" CenterX=".5" CenterY=".5" />
+        </Canvas.LayoutTransform>
+    </Canvas>
 </Window>
