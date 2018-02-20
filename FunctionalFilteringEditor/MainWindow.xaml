@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FunctionalFilteringEditor"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Canvas  Name="canvas" MouseRightButtonDown="canvas_MouseRightButtonDown" Margin="36">
+    <Canvas  Name="canvas" MouseRightButtonDown="canvas_MouseRightButtonDown" MouseLeftButtonDown="canvas_MouseLeftButtonDown" Margin="36">
         <Canvas.Background>
             <SolidColorBrush Color="White" Opacity="0"/>
         </Canvas.Background>

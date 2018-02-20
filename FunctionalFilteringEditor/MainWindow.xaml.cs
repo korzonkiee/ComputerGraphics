@@ -20,27 +20,83 @@ namespace FunctionalFilteringEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Dragger dragger;
+
         private Line xAxis;
         private Line yAxis;
+
+        private List<GraphPoint> graphPoints = new List<GraphPoint>();
+        private List<Line> graphLines = new List<Line>();
 
         public MainWindow()
         {
             InitializeComponent();
 
+            this.dragger = new Dragger(canvas);
+            dragger.DragUpdated += (sender, args) => { UpdateGraph(); };
+
             drawAxis();
+            drawInitialGraphPoints();
+            UpdateGraph();
         }
 
         private void canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var menuItem = new MenuItem();
-            menuItem.Header = "MenuItem";
-            var contextMenu = new ContextMenu();
-            contextMenu.Items.Add(menuItem);
-            canvas.ContextMenu = contextMenu;
+            canvas.ContextMenu = null;
+
+            Point p = Mouse.GetPosition(canvas);
+            var copiedCollection = new List<GraphPoint>(graphPoints);
+            foreach (var gp in copiedCollection)
+            {
+                if (gp.CanRemove && p.X <= gp.PositionX + GraphConsts.PointPadding && p.X >= gp.PositionX - GraphConsts.PointPadding &&
+                    p.Y <= gp.PositionY + GraphConsts.PointPadding && p.Y >= gp.PositionY - GraphConsts.PointPadding)
+                {
+                    var removePointMenuItem = new MenuItem();
+                    removePointMenuItem.Header = "Remove point";
+                    var removeContextMenu = new ContextMenu();
+                    removeContextMenu.Closed += (s, ee) =>
+                    {
+                        canvas.ContextMenu = null;
+                    };
+
+                    removePointMenuItem.Click += (s, ee) =>
+                    {
+                        canvas.Children.Remove(gp.UIElement);
+                        graphPoints.Remove(gp);
+                    };
+                    removeContextMenu.Items.Add(removePointMenuItem);
+                    canvas.ContextMenu = removeContextMenu;
+
+                    return;
+                }
+            }
+
+            var addPointMenuItem = new MenuItem();
+            addPointMenuItem.Header = "Add point";
+            var addContextMenu = new ContextMenu();
+            addContextMenu.Closed += (s, ee) =>
+            {
+                canvas.ContextMenu = null;
+            };
+
+            addPointMenuItem.Click += (s, ee) =>
+            {
+                var graphPoint = GraphPoint.Create(p.X, p.Y);
+                graphPoints.Add(graphPoint);
+
+                dragger.EnableDraggingOnElement(graphPoint, graphPoints);
+                placeEllipseElement(graphPoint.UIElement, p.X, p.Y);
+                canvas.Children.Add(graphPoint.UIElement);
+
+                UpdateGraph();
+            };
+            addContextMenu.Items.Add(addPointMenuItem);
+            canvas.ContextMenu = addContextMenu;
         }
 
-        private void addTextBoxMenuItem_Click(object sender, RoutedEventArgs e)
+        private void canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            Point p = Mouse.GetPosition(canvas);
         }
 
         private void drawAxis()
@@ -66,6 +122,56 @@ namespace FunctionalFilteringEditor
 
             canvas.Children.Add(xAxis);
             canvas.Children.Add(yAxis);
+        }
+
+        private void drawInitialGraphPoints()
+        {
+            var graphPoint1 = GraphPoint.Create(0, 20, false);
+            var graphPoint2 = GraphPoint.Create(255, 40, false);
+
+            placeEllipseElement(graphPoint1.UIElement, 0, 20);
+            placeEllipseElement(graphPoint2.UIElement, 255, 40);
+
+            canvas.Children.Add(graphPoint1.UIElement);
+            canvas.Children.Add(graphPoint2.UIElement);
+
+            graphPoints.Add(graphPoint1);
+            graphPoints.Add(graphPoint2);
+        }
+
+        private void placeEllipseElement(Ellipse ellipse, double x, double y)
+        {
+            Canvas.SetLeft(ellipse, x - ellipse.Width / 2);
+            Canvas.SetTop(ellipse, y - ellipse.Height / 2);
+        }
+
+        private void UpdateGraph()
+        {
+            foreach (var line in graphLines)
+            {
+                canvas.Children.Remove(line);
+            }
+
+            graphLines.Clear();
+
+            graphPoints.Sort(new GraphPointComparer());
+
+            for (int i = 0; i < graphPoints.Count - 1; i++)
+            {
+                var gp = graphPoints[i];
+                var ngp = graphPoints[i + 1];
+
+                var line = new Line();
+                line.Stroke = Brushes.Red;
+                line.X1 = gp.PositionX;
+                line.X2 = ngp.PositionX;
+                line.Y1 = gp.PositionY;
+                line.Y2 = ngp.PositionY;
+                line.StrokeThickness = 1;
+                
+                canvas.Children.Add(line);
+                graphLines.Add(line);
+            }
         }
     }
 }
