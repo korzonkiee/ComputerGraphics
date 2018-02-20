@@ -35,6 +35,8 @@ namespace FunctionalFilteringEditor
             this.dragger = new Dragger(canvas);
             dragger.DragUpdated += (sender, args) => { UpdateGraph(); };
 
+            ConvertImageToGrayScaleImage();
+
             drawAxis();
             drawInitialGraphPoints();
             UpdateGraph();
@@ -168,10 +170,27 @@ namespace FunctionalFilteringEditor
                 line.Y1 = gp.PositionY;
                 line.Y2 = ngp.PositionY;
                 line.StrokeThickness = 1;
-                
+
                 canvas.Children.Add(line);
                 graphLines.Add(line);
             }
+        }
+
+        private void ConvertImageToGrayScaleImage()
+        {
+            Image grayImage = new Image();
+            BitmapImage bmpImage = new BitmapImage();
+            bmpImage.BeginInit();
+            bmpImage.UriSource = new Uri(@"C:\Users\Korzonkie\Desktop\Lenna.png", UriKind.RelativeOrAbsolute);
+            bmpImage.EndInit();
+            FormatConvertedBitmap grayBitmap = new FormatConvertedBitmap();
+            grayBitmap.BeginInit();
+            grayBitmap.Source = bmpImage;
+            grayBitmap.DestinationFormat = PixelFormats.Gray8;
+            grayBitmap.EndInit();
+
+            grayImage.Source = grayBitmap;
+            imageContainer.Children.Add(grayImage);
         }
     }
 }
