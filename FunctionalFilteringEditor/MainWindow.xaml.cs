@@ -12,6 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Color = System.Drawing.Color;
+using Point = System.Windows.Point;
+using Brushes = System.Windows.Media.Brushes;
+using Image = System.Windows.Controls.Image;
+using System.Drawing;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace FunctionalFilteringEditor
 {
@@ -28,18 +35,64 @@ namespace FunctionalFilteringEditor
         private List<GraphPoint> graphPoints = new List<GraphPoint>();
         private List<Line> graphLines = new List<Line>();
 
+        private byte[] colorOuputFunction = new byte[256];
+
+        Bitmap gImage;
+        Image image = new Image();
+
         public MainWindow()
         {
             InitializeComponent();
 
-            this.dragger = new Dragger(canvas);
-            dragger.DragUpdated += (sender, args) => { UpdateGraph(); };
+            gImage = LoadGrayScaleImage();
+            ShowGrayScaleImage(gImage);
 
-            ConvertImageToGrayScaleImage();
+            this.dragger = new Dragger(canvas);
+            dragger.DragUpdated += (sender, args) =>
+            {
+                UpdateGraph();
+                RecalculateColorOutputFunction();
+            };
 
             drawAxis();
             drawInitialGraphPoints();
             UpdateGraph();
+            RecalculateColorOutputFunction();
+            UpdateImage();
+        }
+
+        private Bitmap LoadGrayScaleImage()
+        {
+            Bitmap bmap = new Bitmap(@"C:\Users\Korzonkie\Desktop\Lenna.png");
+            Color c;
+            for (int i = 0; i < bmap.Width; i++)
+            {
+                for (int j = 0; j < bmap.Height; j++)
+                {
+                    c = bmap.GetPixel(i, j);
+                    int pix = (int)(0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B);
+                    bmap.SetPixel(i, j, Color.FromArgb(pix, pix, pix));
+                }
+            }
+            return bmap;
+        }
+
+        private void ShowGrayScaleImage(Bitmap bitmap)
+        {
+            imageContainer.Children.Clear();
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                image.Source = bitmapImage;
+                imageContainer.Children.Add(image);
+            }
         }
 
         private void canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -65,6 +118,8 @@ namespace FunctionalFilteringEditor
                     {
                         canvas.Children.Remove(gp.UIElement);
                         graphPoints.Remove(gp);
+                        UpdateGraph();
+                        RecalculateColorOutputFunction();
                     };
                     removeContextMenu.Items.Add(removePointMenuItem);
                     canvas.ContextMenu = removeContextMenu;
@@ -91,6 +146,7 @@ namespace FunctionalFilteringEditor
                 canvas.Children.Add(graphPoint.UIElement);
 
                 UpdateGraph();
+                RecalculateColorOutputFunction();
             };
             addContextMenu.Items.Add(addPointMenuItem);
             canvas.ContextMenu = addContextMenu;
@@ -128,11 +184,11 @@ namespace FunctionalFilteringEditor
 
         private void drawInitialGraphPoints()
         {
-            var graphPoint1 = GraphPoint.Create(0, 20, false);
-            var graphPoint2 = GraphPoint.Create(255, 40, false);
+            var graphPoint1 = GraphPoint.Create(0, 0, false);
+            var graphPoint2 = GraphPoint.Create(255, 255, false);
 
-            placeEllipseElement(graphPoint1.UIElement, 0, 20);
-            placeEllipseElement(graphPoint2.UIElement, 255, 40);
+            placeEllipseElement(graphPoint1.UIElement, 0, 0);
+            placeEllipseElement(graphPoint2.UIElement, 255, 255);
 
             canvas.Children.Add(graphPoint1.UIElement);
             canvas.Children.Add(graphPoint2.UIElement);
@@ -176,21 +232,43 @@ namespace FunctionalFilteringEditor
             }
         }
 
-        private void ConvertImageToGrayScaleImage()
+        private void RecalculateColorOutputFunction()
         {
-            Image grayImage = new Image();
-            BitmapImage bmpImage = new BitmapImage();
-            bmpImage.BeginInit();
-            bmpImage.UriSource = new Uri(@"C:\Users\Korzonkie\Desktop\Lenna.png", UriKind.RelativeOrAbsolute);
-            bmpImage.EndInit();
-            FormatConvertedBitmap grayBitmap = new FormatConvertedBitmap();
-            grayBitmap.BeginInit();
-            grayBitmap.Source = bmpImage;
-            grayBitmap.DestinationFormat = PixelFormats.Gray8;
-            grayBitmap.EndInit();
+            for (int i = 0; i < graphPoints.Count - 1; i++)
+            {
+                var gp1 = graphPoints[i];
+                var gp2 = graphPoints[i + 1];
 
-            grayImage.Source = grayBitmap;
-            imageContainer.Children.Add(grayImage);
+                var a = (gp2.PositionY - gp1.PositionY) / (gp2.PositionX - gp1.PositionX);
+                var b = gp1.PositionY - a * gp1.PositionX;
+
+                for (int j = (int) gp1.PositionX; j < (int) gp2.PositionX; j++)
+                {
+                    colorOuputFunction[j] = (byte)(a * j + b);
+                }
+            }
+        }
+
+        private void UpdateImage()
+        {
+            Color c;
+            Bitmap bitmap = (Bitmap)gImage.Clone();
+            for (int i = 0; i < bitmap.Width; i++)
+            {
+                for (int j = 0; j < bitmap.Height; j++)
+                {
+                    c = bitmap.GetPixel(i, j);
+                    int pix = colorOuputFunction[c.R];
+                    bitmap.SetPixel(i, j, Color.FromArgb(pix, pix, pix));
+                }
+            }
+
+            ShowGrayScaleImage(bitmap);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateImage();
         }
     }
 }

@@ -47,6 +47,9 @@ namespace FunctionalFilteringEditor
                     var newX = p2.X - dragStart.Value.X;
                     var newY = p2.Y - dragStart.Value.Y;
 
+                    if (newX <= 0 || newX >= 255 || newY <= 0 || newY >= 255)
+                        return;
+
                     graphPoint.PositionX = newX;
                     graphPoint.PositionY = newY;
 

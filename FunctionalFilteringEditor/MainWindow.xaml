@@ -5,16 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FunctionalFilteringEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="800">
+        Title="MainWindow" Height="400" Width="800">
     <StackPanel Orientation="Horizontal">
-        <Canvas Width="255" Name="canvas" MouseRightButtonDown="canvas_MouseRightButtonDown" MouseLeftButtonDown="canvas_MouseLeftButtonDown" Margin="36">
-            <Canvas.Background>
-                <SolidColorBrush Color="White" Opacity="0"/>
-            </Canvas.Background>
-            <Canvas.LayoutTransform>
-                <ScaleTransform ScaleX="1" ScaleY="-1" CenterX=".5" CenterY=".5" />
-            </Canvas.LayoutTransform>
-        </Canvas>
+        <StackPanel Orientation="Vertical">
+            <Canvas Width="255" Height="255" Name="canvas" MouseRightButtonDown="canvas_MouseRightButtonDown" MouseLeftButtonDown="canvas_MouseLeftButtonDown" Margin="36">
+                <Canvas.Background>
+                    <SolidColorBrush Color="White" Opacity="0"/>
+                </Canvas.Background>
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="-1" CenterX=".5" CenterY=".5" />
+                </Canvas.LayoutTransform>
+            </Canvas>
+            <Button Content="Show result" Click="Button_Click"/>
+        </StackPanel>
         <StackPanel Name="imageContainer" Width="255" />
     </StackPanel>
 </Window>
