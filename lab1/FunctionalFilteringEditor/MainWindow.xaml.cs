@@ -184,6 +184,8 @@ namespace FunctionalFilteringEditor
 
         private void drawInitialGraphPoints()
         {
+            ClearGraph();
+
             var graphPoint1 = GraphPoint.Create(0, 0, false);
             var graphPoint2 = GraphPoint.Create(255, 255, false);
 
@@ -195,6 +197,66 @@ namespace FunctionalFilteringEditor
 
             graphPoints.Add(graphPoint1);
             graphPoints.Add(graphPoint2);
+        }
+
+        private void drawInversionGraphPoints()
+        {
+            ClearGraph();
+
+            var graphPoint1 = GraphPoint.Create(0, 255, false);
+            var graphPoint2 = GraphPoint.Create(255, 0, false);
+
+            placeEllipseElement(graphPoint1.UIElement, 0, 255);
+            placeEllipseElement(graphPoint2.UIElement, 255, 0);
+
+            canvas.Children.Add(graphPoint1.UIElement);
+            canvas.Children.Add(graphPoint2.UIElement);
+
+            graphPoints.Add(graphPoint1);
+            graphPoints.Add(graphPoint2);
+        }
+
+        private void drawBrightnessCorrectionAdditionalGraphPoints(int c)
+        {
+            drawInitialGraphPoints();
+
+            var graphPoint1 = GraphPoint.Create(0, c);
+            var graphPoint2 = GraphPoint.Create(255 - c, 255);
+
+            placeEllipseElement(graphPoint1.UIElement, 0, c);
+            placeEllipseElement(graphPoint2.UIElement, 255 - c, 255);
+
+            canvas.Children.Add(graphPoint1.UIElement);
+            canvas.Children.Add(graphPoint2.UIElement);
+
+            graphPoints.Add(graphPoint1);
+            graphPoints.Add(graphPoint2);
+
+            dragger.EnableDraggingOnElement(graphPoint1, graphPoints);
+            dragger.EnableDraggingOnElement(graphPoint2, graphPoints);
+        }
+
+        private void drawConstrastEnhancementAdditionalGraphPoints(int c)
+        {
+            drawInitialGraphPoints();
+
+            int cx1 = ((255 / 2) * (c - 1)) / c;
+            int cx2 = ((255 / 2) * (c + 1)) / c;
+
+            var graphPoint1 = GraphPoint.Create(cx1, 0);
+            var graphPoint2 = GraphPoint.Create(cx2, 255);
+
+            placeEllipseElement(graphPoint1.UIElement, cx1, 0);
+            placeEllipseElement(graphPoint2.UIElement, cx2, 255);
+
+            canvas.Children.Add(graphPoint1.UIElement);
+            canvas.Children.Add(graphPoint2.UIElement);
+
+            graphPoints.Add(graphPoint1);
+            graphPoints.Add(graphPoint2);
+
+            dragger.EnableDraggingOnElement(graphPoint1, graphPoints);
+            dragger.EnableDraggingOnElement(graphPoint2, graphPoints);
         }
 
         private void placeEllipseElement(Ellipse ellipse, double x, double y)
@@ -268,6 +330,105 @@ namespace FunctionalFilteringEditor
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            UpdateImage();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ClearGraph();
+
+            for (int i = 0; i <= 255; i++)
+            {
+                colorOuputFunction[i] = (byte)(255 - i);
+            }
+
+            drawInversionGraphPoints();
+            UpdateGraph();
+            UpdateImage();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            int brightnessCorrectionConstant = 50;
+
+            ClearGraph();
+            drawBrightnessCorrectionAdditionalGraphPoints(brightnessCorrectionConstant);
+
+            for (int i = 0; i <= 255; i++)
+            {
+                var output = i + brightnessCorrectionConstant;
+                output = output > 255 ? 255 : output;
+                output = output < 0 ? 0 : output;
+
+                colorOuputFunction[i] = (byte)output;
+            }
+            
+            UpdateGraph();
+            UpdateImage();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            ClearGraph();
+
+            int contrastEnhancementConstant = 3;
+
+            drawConstrastEnhancementAdditionalGraphPoints(contrastEnhancementConstant);
+
+            Func<int, int> enhancePixelContrast = (x) =>
+            {
+                var res =  contrastEnhancementConstant * (x - 255 / 2) + 255 / 2;
+                res = res > 255 ? 255 : res;
+                res = res < 0 ? 0 : res;
+                return res;
+            };
+
+            for (int i = 0; i <= 255; i++)
+            {
+                colorOuputFunction[i] = (byte)enhancePixelContrast(i);
+            }
+
+            UpdateGraph();
+            UpdateImage();
+        }
+
+        private void ClearGraph()
+        {
+            foreach (var graphPoint in graphPoints)
+            {
+                canvas.Children.Remove(graphPoint.UIElement);
+            }
+
+            graphPoints.Clear();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformBoxFilter(gImage, 7);
+            UpdateImage();
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformGaussianBlur(gImage);
+            UpdateImage();
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformSharpening(gImage);
+            UpdateImage();
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformEdgeDetection(gImage);
+            UpdateImage();
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformEmbossing(gImage);
             UpdateImage();
         }
     }

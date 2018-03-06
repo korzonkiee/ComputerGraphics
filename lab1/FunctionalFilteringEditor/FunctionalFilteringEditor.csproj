@@ -63,7 +63,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ConvolutionFilters.cs" />
     <Compile Include="Dragger.cs" />
+    <Compile Include="FuctionFilters.cs" />
     <Compile Include="GraphConsts.cs" />
     <Compile Include="GraphPoint.cs" />
     <Compile Include="MainWindow.xaml.cs">
