@@ -38,13 +38,17 @@ namespace FunctionalFilteringEditor
         private byte[] colorOuputFunction = new byte[256];
 
         Bitmap gImage;
+        Bitmap oImage;
         Image image = new Image();
+
 
         public MainWindow()
         {
             InitializeComponent();
 
+
             gImage = LoadGrayScaleImage();
+            oImage = (Bitmap)gImage.Clone();
             ShowGrayScaleImage(gImage);
 
             this.dragger = new Dragger(canvas);
@@ -362,6 +366,28 @@ namespace FunctionalFilteringEditor
 
                 colorOuputFunction[i] = (byte)output;
             }
+
+            UpdateGraph();
+            UpdateImage();
+        }
+
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            var text = Gamma.Text;
+            float gammaValue = 1;
+            float.TryParse(text, out gammaValue);
+        
+            ClearGraph();
+            drawInitialGraphPoints();
+        
+            for (int i = 0; i <= 255; i++)
+            {
+                var output = Math.Pow((255.0f * (i / 255.0f)), (1.0f / gammaValue));
+                output = output > 255 ? 255 : output;
+                output = output < 0 ? 0 : output;
+        
+                colorOuputFunction[i] = (byte)output;
+            }
             
             UpdateGraph();
             UpdateImage();
@@ -430,6 +456,15 @@ namespace FunctionalFilteringEditor
         {
             gImage = ConvolutionFilters.PerformEmbossing(gImage);
             UpdateImage();
+        }
+
+        private void Button_Click_0(object sender, RoutedEventArgs e)
+        {
+            ClearGraph();
+            drawInitialGraphPoints();
+            gImage = (Bitmap)oImage.Clone();
+            ShowGrayScaleImage(gImage);
+            UpdateGraph();
         }
     }
 }

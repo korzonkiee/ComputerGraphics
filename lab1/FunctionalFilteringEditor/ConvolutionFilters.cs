@@ -54,6 +54,7 @@ namespace FunctionalFilteringEditor
 
             int ks = 3;
             int krad = 1;
+            int offset = 127;
 
             int[,] kernel = CreateDefaultEdgeDetectionKernel();
 
@@ -75,6 +76,8 @@ namespace FunctionalFilteringEditor
                             sum += kernel[kx_i, ky_i] * bitmap.GetPixel(ki.Item1, ki.Item2).R;
                         }
                     }
+
+                    sum += offset;
 
                     sum = sum < 0 ? 0 : sum;
                     sum = sum > 255 ? 255 : sum;

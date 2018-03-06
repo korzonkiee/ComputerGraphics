@@ -19,6 +19,7 @@
             <Button Content="Show result" Click="Button_Click"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="32">
+            <Button Content="Original" Click="Button_Click_0" Margin="0, 0, 0, 32"/>
             <Button Content="Inversion" Click="Button_Click_1"/>
             <Button Content="Brightness correction" Click="Button_Click_2"/>
             <Button Content="Contrast enhancement" Click="Button_Click_3" Margin="0, 0, 0, 32"/>
@@ -27,6 +28,8 @@
             <Button Content="Sharpen" Click="Button_Click_6"/>
             <Button Content="Edge Detection" Click="Button_Click_7"/>
             <Button Content="Emboss" Click="Button_Click_8"/>
+            <Button Content="Apply gamma correction" Click="Button_Click_10" Margin="0, 16, 0, 0"/>
+            <TextBox Name="Gamma"></TextBox>
         </StackPanel>
         <StackPanel Name="imageContainer" Width="255" />
     </StackPanel>
