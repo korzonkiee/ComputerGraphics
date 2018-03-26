@@ -85,7 +85,13 @@ namespace Dithering
 
         private void OnApplyRandomDithering(object sender, RoutedEventArgs e)
         {
-            dithering.ApplyRandomDithering(resultBitmap);
+
+            int greyLevels;
+            int.TryParse(GreyLevelsTB.Text, out greyLevels);
+            if (greyLevels < 2)
+                greyLevels = DefaultGreyLevel;
+
+            dithering.ApplyRandomDithering(resultBitmap, greyLevels);
             LoadBitmapIntoContainer(resultBitmap);
         }
 

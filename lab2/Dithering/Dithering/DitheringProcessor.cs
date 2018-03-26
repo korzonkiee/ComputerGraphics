@@ -33,23 +33,27 @@ namespace Dithering
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
                 byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
 
-                for (int y = 0; y < heightInPixels; y++)
+                Parallel.For(0, heightInPixels, y =>
                 {
                     byte* currentRow = ptrFirstPixel + (y * bitmapData.Stride);
                     for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
                     {
-                        byte grey = currentRow[x];
+                        float intensity = currentRow[x] / 255f;
+                        
+                        double rand = random.NextDouble();
 
-                        byte[] randByte = new byte[1];
-                        random.NextBytes(randByte);
+                        float greyLevelIntensity = (greyLevels - 1) * intensity;
 
-                        byte output = (grey > randByte[0]) ? (byte)255 : (byte)0;
+                        int upperGreyLevel = (int)Math.Ceiling(greyLevelIntensity);
+                        int bottomGreyLevel = (int)Math.Floor(greyLevelIntensity);
 
-                        currentRow[x] = output;
-                        currentRow[x + 1] = output;
-                        currentRow[x + 2] = output;
+                        int greyLevel = (intensity < rand) ? bottomGreyLevel : upperGreyLevel;
+
+                        currentRow[x] = levels[greyLevel];
+                        currentRow[x + 1] = levels[greyLevel];
+                        currentRow[x + 2] = levels[greyLevel];
                     }
-                }
+                });
 
                 bitmap.UnlockBits(bitmapData);
             }
@@ -73,7 +77,7 @@ namespace Dithering
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
                 byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
 
-                for (int y = 0; y < heightInPixels; y++)
+                Parallel.For(0, heightInPixels, y =>
                 {
                     byte* currentRow = ptrFirstPixel + (y * bitmapData.Stride);
                     for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
@@ -81,7 +85,7 @@ namespace Dithering
                         byte grey = currentRow[x];
 
                         float intensity = (float)grey / 255f;
-                        int greyLevel = (int) Math.Floor((greyLevels - 1) * intensity);
+                        int greyLevel = (int)Math.Floor((greyLevels - 1) * intensity);
 
                         float re = (greyLevels - 1) * intensity - greyLevel;
                         int actualX = x / bytesPerPixel;
@@ -94,7 +98,7 @@ namespace Dithering
                         currentRow[x + 1] = output;
                         currentRow[x + 2] = output;
                     }
-                }
+                });
 
                 bitmap.UnlockBits(bitmapData);
             }

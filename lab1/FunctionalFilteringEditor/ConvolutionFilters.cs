@@ -167,6 +167,10 @@ namespace FunctionalFilteringEditor
             return copy;
         }
 
+        public static Bitmap PerformDithering(Bitmap bitmap)
+        {
+            
+        }
 
         public static Bitmap PerformBoxFilter(Bitmap bitmap, int ks)
         {

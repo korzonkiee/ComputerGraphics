@@ -67,7 +67,7 @@ namespace FunctionalFilteringEditor
 
         private Bitmap LoadGrayScaleImage()
         {
-            Bitmap bmap = new Bitmap(@"C:\Users\Korzonkie\Desktop\Lenna.png");
+            Bitmap bmap = new Bitmap(@"C:\Users\Maciej\Desktop\Lenna.png");
             Color c;
             for (int i = 0; i < bmap.Width; i++)
             {
@@ -308,7 +308,7 @@ namespace FunctionalFilteringEditor
                 var a = (gp2.PositionY - gp1.PositionY) / (gp2.PositionX - gp1.PositionX);
                 var b = gp1.PositionY - a * gp1.PositionX;
 
-                for (int j = (int) gp1.PositionX; j < (int) gp2.PositionX; j++)
+                for (int j = (int)gp1.PositionX; j < (int)gp2.PositionX; j++)
                 {
                     colorOuputFunction[j] = (byte)(a * j + b);
                 }
@@ -376,19 +376,19 @@ namespace FunctionalFilteringEditor
             var text = Gamma.Text;
             float gammaValue = 1;
             float.TryParse(text, out gammaValue);
-        
+
             ClearGraph();
             drawInitialGraphPoints();
-        
+
             for (int i = 0; i <= 255; i++)
             {
                 var output = Math.Pow((255.0f * (i / 255.0f)), (1.0f / gammaValue));
                 output = output > 255 ? 255 : output;
                 output = output < 0 ? 0 : output;
-        
+
                 colorOuputFunction[i] = (byte)output;
             }
-            
+
             UpdateGraph();
             UpdateImage();
         }
@@ -403,7 +403,7 @@ namespace FunctionalFilteringEditor
 
             Func<int, int> enhancePixelContrast = (x) =>
             {
-                var res =  contrastEnhancementConstant * (x - 255 / 2) + 255 / 2;
+                var res = contrastEnhancementConstant * (x - 255 / 2) + 255 / 2;
                 res = res > 255 ? 255 : res;
                 res = res < 0 ? 0 : res;
                 return res;
@@ -455,6 +455,12 @@ namespace FunctionalFilteringEditor
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             gImage = ConvolutionFilters.PerformEmbossing(gImage);
+            UpdateImage();
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e)
+        {
+            gImage = ConvolutionFilters.PerformDithering(gImage);
             UpdateImage();
         }
 
