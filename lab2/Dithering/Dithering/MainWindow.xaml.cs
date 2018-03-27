@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Dithering.ColorQuantization;
+using Dithering.ImageProcessors;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,11 +28,14 @@ namespace Dithering
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly DitheringProcessor dithering;
-        private readonly GreyScaleConverter greyScaleConverter;
+        private readonly GreyScaleImageProcessor greyScaleImageProcessor;
+        private readonly DitheringImageProcessor ditheringImageProcessor;
+        private readonly OctreeQuantImageProcessor octreeQuantImageProcessor;
+        private readonly PopularityQuantImageProcessor popularityQuantImageProcessor;
 
         private const int DefaultGreyLevel = 2;
         private const int DefaultDitherMatrix = 2;
+        private const int DefaultPaletteSize = 8;
 
         private Bitmap originalBitmap;
         private Bitmap resultBitmap;
@@ -39,8 +44,10 @@ namespace Dithering
         {
             InitializeComponent();
 
-            this.dithering = new DitheringProcessor();
-            this.greyScaleConverter = new GreyScaleConverter();
+            this.greyScaleImageProcessor = new GreyScaleImageProcessor();
+            this.ditheringImageProcessor = new DitheringImageProcessor();
+            this.octreeQuantImageProcessor = new OctreeQuantImageProcessor();
+            this.popularityQuantImageProcessor = new PopularityQuantImageProcessor();
 
             GreyLevelsTB.Text = DefaultGreyLevel.ToString();
             DitherMatrixSizeTB.Text = DefaultDitherMatrix.ToString();
@@ -56,8 +63,6 @@ namespace Dithering
             if (op.ShowDialog() == true)
             {
                 originalBitmap = new Bitmap(op.FileName);
-                greyScaleConverter.Convert(originalBitmap);
-                
                 resultBitmap = (Bitmap) originalBitmap.Clone();
 
                 LoadBitmapIntoContainer(originalBitmap, true);
@@ -85,18 +90,24 @@ namespace Dithering
 
         private void OnApplyRandomDithering(object sender, RoutedEventArgs e)
         {
+            greyScaleImageProcessor.Process(originalBitmap);
 
             int greyLevels;
             int.TryParse(GreyLevelsTB.Text, out greyLevels);
             if (greyLevels < 2)
                 greyLevels = DefaultGreyLevel;
 
-            dithering.ApplyRandomDithering(resultBitmap, greyLevels);
+            ditheringImageProcessor.GreyLevels = greyLevels;
+            ditheringImageProcessor.DitheringType = DitheringType.Random;
+            ditheringImageProcessor.Process(resultBitmap);
+
             LoadBitmapIntoContainer(resultBitmap);
         }
 
         private void OnApplyOrdererdDithering(object sender, RoutedEventArgs e)
         {
+            greyScaleImageProcessor.Process(originalBitmap);
+
             int ditherMatrixSize;
             int.TryParse(DitherMatrixSizeTB.Text, out ditherMatrixSize);
             if (ditherMatrixSize < 2)
@@ -107,18 +118,38 @@ namespace Dithering
             if (greyLevels < 2)
                 greyLevels = DefaultGreyLevel;
 
-            dithering.ApplyOrdererdDithering(resultBitmap, ditherMatrixSize, greyLevels);
+            ditheringImageProcessor.GreyLevels = greyLevels;
+            ditheringImageProcessor.DitherMatrixSize = ditherMatrixSize;
+            ditheringImageProcessor.DitheringType = DitheringType.Ordered;
+            ditheringImageProcessor.Process(resultBitmap);
+
             LoadBitmapIntoContainer(resultBitmap);
         }
 
         private void OnApplyPopularityAlgorithm(object sender, RoutedEventArgs e)
         {
+            int paletteSize;
+            int.TryParse(ColorPalleteSizeTB.Text, out paletteSize);
+            if (paletteSize < 2)
+                paletteSize = DefaultPaletteSize;
 
+            popularityQuantImageProcessor.PaletteSize = paletteSize;
+            popularityQuantImageProcessor.Process(resultBitmap);
+
+            LoadBitmapIntoContainer(resultBitmap);
         }
 
         private void OnApplyOctreeColorAlgorithm(object sender, RoutedEventArgs e)
         {
+            int paletteSize;
+            int.TryParse(ColourPaletteMaxSizeTB.Text, out paletteSize);
+            if (paletteSize < 2)
+                paletteSize = DefaultPaletteSize;
 
+            octreeQuantImageProcessor.PaletteSize = paletteSize;
+            octreeQuantImageProcessor.Process(resultBitmap);
+
+            LoadBitmapIntoContainer(resultBitmap);
         }
     }
 }

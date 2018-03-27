@@ -85,14 +85,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DitheringProcessor.cs" />
-    <Compile Include="GreyScaleConverter.cs" />
+    <Compile Include="ColorQuantization\Color.cs" />
+    <Compile Include="ColorQuantization\Octree.cs" />
+    <Compile Include="ImageProcessors\DitheringImageProcessor.cs" />
+    <Compile Include="ImageProcessors\DitheringType.cs" />
+    <Compile Include="ImageProcessors\GreyScaleImageProcessor.cs" />
+    <Compile Include="ImageProcessors\OctreeQuantImageProcessor.cs" />
+    <Compile Include="ImageProcessors\PopularityQuantImageProcessor.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParallelImageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
