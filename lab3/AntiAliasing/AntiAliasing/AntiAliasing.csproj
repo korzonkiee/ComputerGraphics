@@ -65,6 +65,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapProcessor.cs" />
+    <Compile Include="CustomControls\ZoomBorder.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="MainWindow.xaml.cs">

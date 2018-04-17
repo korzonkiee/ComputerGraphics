@@ -8,8 +8,10 @@
         WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="512" Width="512">
     <Grid>
-        <Border BorderThickness="1">
-            <Image Margin="5" Width="256" Height="256" Name="Canvas"/>
-        </Border>
+        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="White">
+            <Border BorderThickness="1">
+                <Image Margin="5" Width="256" Height="256" Name="Canvas"/>
+            </Border>
+        </local:ZoomBorder>
     </Grid>
 </Window>
