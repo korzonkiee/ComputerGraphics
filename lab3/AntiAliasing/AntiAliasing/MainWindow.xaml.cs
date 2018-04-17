@@ -34,7 +34,7 @@ namespace AntiAliasing
             this.bitmapProcessor = new BitmapProcessor(canvas);
 
             bitmapProcessor.ClearBitmap();
-            bitmapProcessor.DrawLine(0, 0, (int)Canvas.Width, (int)Canvas.Height);
+            bitmapProcessor.DrawCircle(50, 50, 50);
 
             Canvas.ShowBitmap(canvas);
         }
