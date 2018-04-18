@@ -7,11 +7,17 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="512" Width="512">
-    <Grid>
-        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="White">
-            <Border BorderThickness="1">
-                <Image Margin="5" Width="256" Height="256" Name="Canvas"/>
-            </Border>
-        </local:ZoomBorder>
-    </Grid>
+    <DockPanel Background="White">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Canvas">
+                <MenuItem Header="_Clear" Click="MenuItem_ClearClick" />
+                <MenuItem Name="AntiAliasingMenuItemCheck" Header="_Anti-aliasing" IsCheckable="True" Checked="MenuItem_AntiAliasingChecked" Unchecked="MenuItem_AntiAliasingUnchecked"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel>
+            <Grid Name="Container" Background="White">
+                <Image Width="512" Height="512" Name="CanvasImage"/>
+            </Grid>
+        </StackPanel>
+    </DockPanel>
 </Window>

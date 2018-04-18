@@ -16,6 +16,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Point = System.Windows.Point;
+using Mouse = AntiAliasing.Extensions.Mouse;
+
 namespace AntiAliasing
 {
     /// <summary>
@@ -23,40 +26,80 @@ namespace AntiAliasing
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Bitmap canvas;
-        private readonly BitmapProcessor bitmapProcessor;
+        private readonly Canvas canvas;
+
+        private bool isDrawingLine = false;
+        private Point drawingLineStart;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            this.canvas = new Bitmap((int)Canvas.Width, (int)Canvas.Height);
-            this.bitmapProcessor = new BitmapProcessor(canvas);
-
-            bitmapProcessor.ClearBitmap();
-            bitmapProcessor.DrawAntiAliasedCircle(50, 100, 100);
-
-            Canvas.ShowBitmap(canvas);
+            this.canvas = new Canvas(CanvasImage);
+            Container.MouseRightButtonDown += Container_RightClick;
         }
 
-        public void DrawLine(int x1, int y1, int x2, int y2)
+        private void Container_RightClick(object sender, MouseEventArgs e)
         {
-            BitmapData bitmapData = canvas.Lock();
+            Container.ContextMenu = null;
 
-            for (int y = 0; y < 50; y++)
+            var p = Mouse.GetMousePosition(CanvasImage);
+
+            var drawContextMenu = new ContextMenu();
+            var drawLine = new MenuItem();
+            var drawCircle = new MenuItem();
+
+            if (!isDrawingLine)
             {
-                for (int x = 0; x < 50; x++)
+                drawLine.Header = "Start line";
+                drawLine.Click += (s, ee) =>
                 {
-                    bitmapData.SetPixel(canvas, x, y, 255);
-                }
+                    drawingLineStart = p;
+
+                    isDrawingLine = true;
+                };
+            }
+            else
+            {
+                drawCircle.IsEnabled = false;
+
+                drawLine.Header = "End line";
+
+                drawLine.Click += (s, ee) =>
+                {
+                    canvas.DrawLine((int)drawingLineStart.X, (int)drawingLineStart.Y,
+                        (int)p.X, (int)p.Y);
+
+                    isDrawingLine = false;
+                };
             }
 
-            canvas.Unlock(bitmapData);
+            drawCircle.Header = "Draw circle";
+            drawCircle.Click += (s, ee) =>
+            {
+                canvas.DrawCircle((int)p.X, (int)p.Y, 50);
+            };
+
+            drawContextMenu.Items.Add(drawLine);
+            drawContextMenu.Items.Add(new Separator());
+            drawContextMenu.Items.Add(drawCircle);
+
+            Container.ContextMenu = drawContextMenu;
         }
 
-        public void ClearBitmap()
+        private void MenuItem_ClearClick(object sender, RoutedEventArgs e)
         {
-            bitmapProcessor.ClearBitmap();
+            canvas.Clear();
+        }
+
+        private void MenuItem_AntiAliasingChecked(object sender, RoutedEventArgs e)
+        {
+            canvas.EnableAntiAliasing();
+        }
+
+        private void MenuItem_AntiAliasingUnchecked(object sender, RoutedEventArgs e)
+        {
+            canvas.DisableAntiAliasing();
         }
     }
 }

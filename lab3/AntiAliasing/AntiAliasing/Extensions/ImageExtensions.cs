@@ -13,7 +13,7 @@ namespace AntiAliasing.Extensions
 {
     public static class ImageExtensions
     {
-        public static void ShowBitmap(this Image image, Bitmap bitmap)
+        public static void UpdateBitmap(this Image image, Bitmap bitmap)
         {
             using (var memory = new MemoryStream())
             {

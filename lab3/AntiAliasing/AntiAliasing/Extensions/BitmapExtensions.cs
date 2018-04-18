@@ -6,15 +6,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Color = AntiAliasing.Figures.Color;
+
 namespace AntiAliasing.Extensions
 {
     public static class BitmapExtensions
     {
-        public static void SetPixel(this BitmapData bitmapData, Bitmap bitmap, int x, int y, byte val)
+        public static void SetPixel(this BitmapData bitmapData, int x, int y, Color color)
         {
+            if (x < 0 || x >= bitmapData.Width ||
+                y < 0 || y >= bitmapData.Height)
+            {
+                return;
+            }
+
             unsafe
             {
-                int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(bitmap.PixelFormat) >> 3;
+                int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(PixelFormat.Format32bppArgb) >> 3;
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
 
                 y = bitmapData.Height - y - 1;
@@ -24,9 +32,9 @@ namespace AntiAliasing.Extensions
                 byte* row = ptrFirstPixel + (y * bitmapData.Stride);
                 int col = x * bytesPerPixel;
 
-                row[col + 2] = val;
-                row[col + 1] = val;
-                row[col] = val;
+                row[col + 2] = color.R;
+                row[col + 1] = color.G;
+                row[col] = color.B;
             }
         }
 
