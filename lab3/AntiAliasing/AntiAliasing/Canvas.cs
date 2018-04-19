@@ -49,6 +49,11 @@ namespace AntiAliasing
             renderer.Clear();
         }
 
+        public void SetPixel(int x, int y)
+        {
+            renderer.SetPixel(x, y, Colors.Black);
+        }
+
         public void DrawCircle(int x, int y, int r)
         {
             var circle = new Circle(x, y, r, Colors.Black);

@@ -31,12 +31,34 @@ namespace AntiAliasing
         private bool isDrawingLine = false;
         private Point drawingLineStart;
 
+        Point currentPoint = new Point();
+
         public MainWindow()
         {
             InitializeComponent();
 
             this.canvas = new Canvas(CanvasImage);
             Container.MouseRightButtonDown += Container_RightClick;
+            Container.MouseMove += OnMouseMove;
+            Container.MouseDown += OnMouseDown;
+        }
+
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+                currentPoint = e.GetPosition(this);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var to = Mouse.GetMousePosition(CanvasImage);
+                canvas.DrawLine((int) currentPoint.X, (int) currentPoint.Y, (int) to.X, (int) to.Y);
+
+                currentPoint = to;
+            }
         }
 
         private void Container_RightClick(object sender, MouseEventArgs e)

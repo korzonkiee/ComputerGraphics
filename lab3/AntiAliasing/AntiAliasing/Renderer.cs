@@ -53,6 +53,15 @@ namespace AntiAliasing
             RenderCompleted?.Invoke(this, null);
         }
 
+        public void SetPixel(int x, int y, Color color)
+        {
+            BitmapData bitmapData = bitmap.Lock();
+            bitmapData.SetPixel(x, y, color);
+            bitmap.Unlock(bitmapData);
+
+            RenderCompleted?.Invoke(this, null);
+        }
+
         /// <summary>
         /// Sets each pixel on a canvas to white color.
         /// </summary>
