@@ -13,7 +13,7 @@ namespace AntiAliasing
 {
     /// <summary>
     /// Canvas which make use of System.Windows.Controls.Image
-    /// as an plane on which System.Drawing.Bitmap is rendered.W
+    /// as an plane on which System.Drawing.Bitmap is rendered.
     /// </summary>
     public class Canvas
     {

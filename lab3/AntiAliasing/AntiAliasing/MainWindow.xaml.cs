@@ -41,6 +41,12 @@ namespace AntiAliasing
             Container.MouseRightButtonDown += Container_RightClick;
             Container.MouseMove += OnMouseMove;
             Container.MouseDown += OnMouseDown;
+
+            canvas.EnableAntiAliasing();
+
+            canvas.DrawCircle(300, 300, 100);
+            canvas.DrawLine(0, 0, 200, 300);
+            canvas.DrawLine(300, 300, 200, 200);
         }
 
 

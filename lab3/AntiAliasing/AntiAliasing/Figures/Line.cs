@@ -36,7 +36,15 @@ namespace AntiAliasing.Figures
             float dx = X2 - X1;
             float m = dy / dx;
             float y = Y1;
-            for (int x = X1; x <= X2; ++x)
+
+            int start = X1, end = X2;
+            if (X2 < X1)
+            {
+                start = X2;
+                end = X1;
+            }
+
+            for (int x = start; x <= end; x++)
             {
                 bitmapData.SetPixel(x, (int)Math.Round(y), Color);
                 y += m;
@@ -57,7 +65,14 @@ namespace AntiAliasing.Figures
             float m = dy / dx;
             float y = Y1;
 
-            for (int x = X1; x <= X2; ++x)
+            int start = X1, end = X2;
+            if (X2 < X1)
+            {
+                start = X2;
+                end = X1;
+            }
+
+            for (int x = start; x <= end; ++x)
             {
                 byte c1 = (byte)(lineColor * (1 - Modf(y)) + bgColor * Modf(y));
                 byte c2 = (byte)(lineColor * Modf(y) + bgColor * (1 - Modf(y)));
