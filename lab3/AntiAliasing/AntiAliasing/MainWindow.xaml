@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AntiAliasing"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="512" Width="512">
+        Title="MainWindow" Height="600" Width="600">
     <DockPanel Background="White">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Canvas">
@@ -14,8 +14,8 @@
                 <MenuItem Name="AntiAliasingMenuItemCheck" Header="_Anti-aliasing" IsCheckable="True" Checked="MenuItem_AntiAliasingChecked" Unchecked="MenuItem_AntiAliasingUnchecked"/>
             </MenuItem>
         </Menu>
-        <StackPanel>
-            <Grid Name="Container" Background="White">
+        <StackPanel Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Name="Container" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Width="512" Height="512" Name="CanvasImage"/>
             </Grid>
         </StackPanel>

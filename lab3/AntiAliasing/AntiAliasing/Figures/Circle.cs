@@ -98,28 +98,28 @@ namespace AntiAliasing.Figures
                 bitmapData.SetPixel(x_ceil + X_Center, y + Y_Center, colorR);
                 bitmapData.SetPixel(x_ceil - 1 + X_Center, y + Y_Center, colorL);
 
+                bitmapData.SetPixel(y + X_Center, x_ceil + Y_Center, colorR);
+                bitmapData.SetPixel(y + X_Center, x_ceil + Y_Center - 1, colorL);
+                
+                bitmapData.SetPixel(y + X_Center, -x_ceil + Y_Center, colorR);
+                bitmapData.SetPixel(y + X_Center, -x_ceil + Y_Center + 1, colorL);
+
                 bitmapData.SetPixel(x_ceil + X_Center, -y + Y_Center, colorR);
                 bitmapData.SetPixel(x_ceil - 1 + X_Center, -y + Y_Center, colorL);
+                
+                bitmapData.SetPixel(-x_ceil + X_Center, -y + Y_Center, colorR);
+                bitmapData.SetPixel(-x_ceil + 1 + X_Center, -y + Y_Center, colorL);
+                
+                bitmapData.SetPixel(-y + X_Center, -x_ceil + Y_Center, colorR);
+                bitmapData.SetPixel(-y + X_Center, -x_ceil + Y_Center + 1, colorL);
+                
+                bitmapData.SetPixel(-y + X_Center, x_ceil + Y_Center, colorR);
+                bitmapData.SetPixel(-y + X_Center, x_ceil + Y_Center - 1, colorL);
 
-                bitmapData.SetPixel(-x_ceil + X_Center, y + Y_Center, colorL);
-                bitmapData.SetPixel(-x_ceil - 1 + X_Center, y + Y_Center, colorR);
-
-                bitmapData.SetPixel(-x_ceil + X_Center, -y + Y_Center, colorL);
-                bitmapData.SetPixel(-x_ceil - 1 + X_Center, -y + Y_Center, colorR);
-
-                bitmapData.SetPixel(y + X_Center, x_ceil + Y_Center, colorR);
-                bitmapData.SetPixel(y - 1 + X_Center, x_ceil + Y_Center, colorL);
-
-                bitmapData.SetPixel(-y + X_Center, x_ceil + Y_Center, colorL);
-                bitmapData.SetPixel(-y - 1 + X_Center, x_ceil + Y_Center, colorR);
-
-                bitmapData.SetPixel(y + X_Center, -x_ceil + Y_Center, colorR);
-                bitmapData.SetPixel(y - 1 + X_Center, -x_ceil + Y_Center, colorL);
-
-                bitmapData.SetPixel(-y + X_Center, -x_ceil + Y_Center, colorL);
-                bitmapData.SetPixel(-y - 1 + X_Center, -x_ceil + Y_Center, colorR);
-
-                ++y;
+                bitmapData.SetPixel(-x_ceil + X_Center, y + Y_Center, colorR);
+                bitmapData.SetPixel(-x_ceil + 1 + X_Center, y + Y_Center, colorL);
+                
+                y++;
             }
         }
 
