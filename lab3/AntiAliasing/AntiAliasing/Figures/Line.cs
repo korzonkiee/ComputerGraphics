@@ -33,6 +33,22 @@ namespace AntiAliasing.Figures
             Color = color;
         }
 
+        public override Figure SuperSampled()
+        {
+            int _thick = 1;
+
+            if (thickness == 1)
+                _thick = 3;
+            else if (thickness == 3)
+                _thick = 5;
+            else if (thickness == 5)
+                _thick = 7;
+            else if (thickness == 7)
+                _thick = 9;
+
+            return new Line(x0 * 2, y0 * 2, x1 * 2, y1 * 2, Color, _thick);
+        }
+
         /// <summary>
         /// Renders a line using Digital Differential Analyzer algorithm.
         /// </summary>
@@ -147,33 +163,9 @@ namespace AntiAliasing.Figures
             }
         }
 
-        int ipart(double x) { return (int)x; }
-
-        int round(double x) { return ipart(x + 0.5); }
-
-        double fpart(double x)
-        {
-            if (x < 0) return (1 - (x - Math.Floor(x)));
-            return (x - Math.Floor(x));
-        }
-
-        double rfpart(double x)
-        {
-            return 1 - fpart(x);
-        }
-
         private double Modf(double y)
         {
             return y - Math.Truncate(y);
-        }
-
-        private void plot(BitmapData bitmap, double x, double y, double c)
-        {
-            int alpha = (int)(c * 255);
-            if (alpha > 255) alpha = 255;
-            if (alpha < 0) alpha = 0;
-
-            bitmap.SetPixel((int)x, (int)y, (byte)alpha);
         }
     }
 }

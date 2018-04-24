@@ -24,6 +24,11 @@ namespace AntiAliasing.Figures
             Color = color;
         }
 
+        public override Figure SuperSampled()
+        {
+            return new Circle(X_Center * 2, Y_Center * 2, R * 2, Color);
+        }
+
 
         /// <summary>
         /// Renders a circle using Midpoint Circle Algorithm.

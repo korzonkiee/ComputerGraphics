@@ -23,6 +23,7 @@ namespace AntiAliasing
         private readonly Renderer renderer;
 
         private List<Figure> figures = new List<Figure>();
+        private int lineThickness = 1;
 
         public Canvas(Image image)
         {
@@ -62,7 +63,7 @@ namespace AntiAliasing
 
         public void DrawLine(int x1, int y1, int x2, int y2)
         {
-            var line = new Line(x1, y1, x2, y2, Colors.Black);
+            var line = new Line(x1, y1, x2, y2, Colors.Black, lineThickness);
             renderer.Render(line);
         }
 
@@ -78,6 +79,22 @@ namespace AntiAliasing
             renderer.DisableAntiAliasing();
             renderer.Clear();
             renderer.Render(figures);
+        }
+
+        public void EnableSuperSampling()
+        {
+            renderer.EnableSuperSampling(figures);
+        }
+
+        public void DisableSuperSampling()
+        {
+            renderer.Clear();
+            renderer.Render(figures);
+        }
+
+        public void SetLineThickness(int t)
+        {
+            lineThickness = t;
         }
     }
 }

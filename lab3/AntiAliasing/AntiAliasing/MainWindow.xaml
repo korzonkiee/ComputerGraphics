@@ -12,10 +12,16 @@
             <MenuItem Header="_Canvas">
                 <MenuItem Header="_Clear" Click="MenuItem_ClearClick" />
                 <MenuItem Name="AntiAliasingMenuItemCheck" Header="_Anti-aliasing" IsCheckable="True" Checked="MenuItem_AntiAliasingChecked" Unchecked="MenuItem_AntiAliasingUnchecked"/>
+                <MenuItem Name="SuperSampleMenuItemCheck" Header="_SuperSampling" IsCheckable="True" Checked="SuperSampleMenuItemCheck_Checked" Unchecked="SuperSampleMenuItemCheck_Unchecked"/>
+            </MenuItem>
+            <MenuItem Header="_Thickness">
+                <MenuItem Header="_3" Click="Thickness_3"/>
+                <MenuItem Header="_5" Click="Thickness_5"/>
+                <MenuItem Header="_7" Click="Thickness_7"/>
             </MenuItem>
         </Menu>
         <StackPanel Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid Name="Container" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid Name="Container" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 16, 0, 0">
                 <Image Width="512" Height="512" Name="CanvasImage"/>
             </Grid>
         </StackPanel>

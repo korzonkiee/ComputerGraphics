@@ -123,5 +123,30 @@ namespace AntiAliasing
         {
             canvas.DisableAntiAliasing();
         }
+
+        private void Thickness_3(object sender, RoutedEventArgs e)
+        {
+            canvas.SetLineThickness(3);
+        }
+
+        private void Thickness_5(object sender, RoutedEventArgs e)
+        {
+            canvas.SetLineThickness(5);
+        }
+
+        private void Thickness_7(object sender, RoutedEventArgs e)
+        {
+            canvas.SetLineThickness(7);
+        }
+
+        private void SuperSampleMenuItemCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            canvas.EnableSuperSampling();
+        }
+
+        private void SuperSampleMenuItemCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            canvas.DisableSuperSampling();
+        }
     }
 }
