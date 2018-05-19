@@ -21,6 +21,18 @@ namespace AntiAliasing.Figures
 
         public Color Color { get; }
 
+        public void UpdateStart(double x0, double y0)
+        {
+            this.x0 = x0;
+            this.y0 = y0;
+        }
+
+        public void UpdateEnd(double x1, double y1)
+        {
+            this.x1 = x1;
+            this.y1 = y1;
+        }
+
         public Line(double x0, double y0, double x1, double y1, Color color, int thickness = 5)
         {
             this.x0 = x0;
@@ -52,7 +64,7 @@ namespace AntiAliasing.Figures
         /// <summary>
         /// Renders a line using Digital Differential Analyzer algorithm.
         /// </summary>
-        protected override void NormalRender(BitmapData bitmapData)
+        public override void NormalRender(BitmapData bitmapData)
         {
             double _y0 = y0;
             double _x0 = x0;
@@ -106,7 +118,7 @@ namespace AntiAliasing.Figures
         /// <summary>
         /// Draws anti-aliased line using Fast Antialiased Line Generation — Xiaolin Wu.
         /// </summary>
-        protected override void AntiAliasingRender(BitmapData bitmap)
+        public override void AntiAliasingRender(BitmapData bitmap)
         {
             double _y0 = y0;
             double _x0 = x0;
@@ -161,6 +173,20 @@ namespace AntiAliasing.Figures
                     y += m;
                 }
             }
+        }
+
+        public void Clip(double tE, double tL)
+        {
+            double Δx = this.x1 - this.x0;
+            double Δy = this.y1 - this.y0;
+
+            double a = Δy / Δx;
+
+            x0 = x0 + tE * Δx;
+            x1 = x0 + tL * Δx;
+
+            y0 = y0 + a * (tE * Δx);
+            y1 = y0 + a * (tL * Δx);
         }
 
         private double Modf(double y)

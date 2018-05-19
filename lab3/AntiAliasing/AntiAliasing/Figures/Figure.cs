@@ -24,8 +24,8 @@ namespace AntiAliasing.Figures
             }
         }
 
-        protected abstract void NormalRender(BitmapData bitmapData);
-        protected abstract void AntiAliasingRender(BitmapData bitmapData);
+        public abstract void NormalRender(BitmapData bitmapData);
+        public abstract void AntiAliasingRender(BitmapData bitmapData);
         public abstract Figure SuperSampled();
     }
 }

@@ -11,10 +11,14 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Canvas">
                 <MenuItem Header="_Clear" Click="MenuItem_ClearClick" />
+                <Separator />
                 <MenuItem Name="AntiAliasingMenuItemCheck" Header="_Anti-aliasing" IsCheckable="True" Checked="MenuItem_AntiAliasingChecked" Unchecked="MenuItem_AntiAliasingUnchecked"/>
                 <MenuItem Name="SuperSampleMenuItemCheck" Header="_SuperSampling" IsCheckable="True" Checked="SuperSampleMenuItemCheck_Checked" Unchecked="SuperSampleMenuItemCheck_Unchecked"/>
+                <Separator />
+                <MenuItem Name="ClipMenuItem" Header="_Clip" Click="ClipMenuItem_Click"/>
             </MenuItem>
             <MenuItem Header="_Thickness">
+                <MenuItem Header="_1" Click="Thickness_1"/>
                 <MenuItem Header="_3" Click="Thickness_3"/>
                 <MenuItem Header="_5" Click="Thickness_5"/>
                 <MenuItem Header="_7" Click="Thickness_7"/>

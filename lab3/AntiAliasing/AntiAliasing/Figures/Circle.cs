@@ -33,7 +33,7 @@ namespace AntiAliasing.Figures
         /// <summary>
         /// Renders a circle using Midpoint Circle Algorithm.
         /// </summary>
-        protected override void NormalRender(BitmapData bitmapData)
+        public override void NormalRender(BitmapData bitmapData)
         {
             int dE = 3;
             int dSE = 5 - 2 * R;
@@ -79,7 +79,7 @@ namespace AntiAliasing.Figures
         /// <summary>
         /// Draws anti-aliased circle using Fast Antialiased Line Generation — Xiaolin Wu.
         /// </summary>
-        protected override void AntiAliasingRender(BitmapData bitmapData)
+        public override void AntiAliasingRender(BitmapData bitmapData)
         {
             byte lineColor = 0;
             byte bgColor = 255;

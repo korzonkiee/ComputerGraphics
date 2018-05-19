@@ -64,6 +64,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Figures\ClippingRectangle.cs" />
+    <Compile Include="Figures\Polygon.cs" />
+    <Compile Include="Figures\Rectangle.cs" />
     <Compile Include="Figures\RenderMode.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="Canvas.cs" />

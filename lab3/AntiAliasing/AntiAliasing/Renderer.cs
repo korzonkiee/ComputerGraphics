@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 
 using Figure = AntiAliasing.Figures.Figure;
+using Rectangle = System.Drawing.Rectangle;
 using Color = AntiAliasing.Figures.Color;
 using AntiAliasing.Figures;
 using System.IO;

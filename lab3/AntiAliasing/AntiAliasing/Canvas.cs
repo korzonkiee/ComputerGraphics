@@ -6,8 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using Image = System.Windows.Controls.Image;
+using Rectangle = AntiAliasing.Figures.Rectangle;
+using Point = System.Windows.Point;
 
 namespace AntiAliasing
 {
@@ -23,6 +26,8 @@ namespace AntiAliasing
         private readonly Renderer renderer;
 
         private List<Figure> figures = new List<Figure>();
+        private ClippingRectangle clippingRect;
+
         private int lineThickness = 1;
 
         public Canvas(Image image)
@@ -67,18 +72,46 @@ namespace AntiAliasing
             renderer.Render(line);
         }
 
+        public void DrawClippingRect(int x_min, int y_min, int x_max, int y_max)
+        {
+            clippingRect = new ClippingRectangle(x_min, y_min, x_max, y_max, Colors.Black, lineThickness);
+            renderer.Render(clippingRect);
+        }
+
+        public void DrawPolygon(List<Point> vertices)
+        {
+            var polygon = new Polygon(vertices, Colors.Black, lineThickness);
+            renderer.Render(polygon);
+        }
+
+        public void ClipToRect()
+        {
+            if (clippingRect == null)
+                return;
+
+            var outsideLines = new List<Line>();
+            clippingRect.OutsideLine += (s, e) => { outsideLines.Add(e); };
+
+            foreach (var line in figures.Where(f => f is Line))
+            {
+                clippingRect.ClipFigure(line);
+            }
+
+            figures = figures.Except(outsideLines).ToList();
+
+            Redraw();
+        }
+
         public void EnableAntiAliasing()
         {
             renderer.EnableAntiAliasing();
-            renderer.Clear();
-            renderer.Render(figures);
+            Redraw();
         }
 
         public void DisableAntiAliasing()
         {
             renderer.DisableAntiAliasing();
-            renderer.Clear();
-            renderer.Render(figures);
+            Redraw();
         }
 
         public void EnableSuperSampling()
@@ -88,13 +121,18 @@ namespace AntiAliasing
 
         public void DisableSuperSampling()
         {
-            renderer.Clear();
-            renderer.Render(figures);
+            Redraw();
         }
 
         public void SetLineThickness(int t)
         {
             lineThickness = t;
+        }
+
+        private void Redraw()
+        {
+            renderer.Clear();
+            renderer.Render(figures);
         }
     }
 }

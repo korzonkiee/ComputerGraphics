@@ -29,7 +29,13 @@ namespace AntiAliasing
         private readonly Canvas canvas;
 
         private bool isDrawingLine = false;
+        private bool isDrawingRect = false;
+        private bool isDrawingPolygon = false;
+
+        private List<Point> polygonVertices = new List<Point>();
+
         private Point drawingLineStart;
+        private Point drawingRectStart;
 
         Point currentPoint = new Point();
 
@@ -39,10 +45,10 @@ namespace AntiAliasing
 
             this.canvas = new Canvas(CanvasImage);
             Container.MouseRightButtonDown += Container_RightClick;
+            Container.MouseLeftButtonDown += Container_LeftClick;
             Container.MouseMove += OnMouseMove;
             Container.MouseDown += OnMouseDown;
         }
-
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -52,12 +58,24 @@ namespace AntiAliasing
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
+            if (isDrawingPolygon)
+                return;
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 var to = Mouse.GetMousePosition(CanvasImage);
                 canvas.DrawLine((int) currentPoint.X, (int) currentPoint.Y, (int) to.X, (int) to.Y);
 
                 currentPoint = to;
+            }
+        }
+
+        private void Container_LeftClick(object sender, MouseButtonEventArgs e)
+        {
+            if (isDrawingPolygon)
+            {
+                var p = Mouse.GetMousePosition(CanvasImage);
+                polygonVertices.Add(p);
             }
         }
 
@@ -69,6 +87,8 @@ namespace AntiAliasing
 
             var drawContextMenu = new ContextMenu();
             var drawLine = new MenuItem();
+            var drawRect = new MenuItem();
+            var drawPolygon = new MenuItem();
             var drawCircle = new MenuItem();
 
             if (!isDrawingLine)
@@ -84,6 +104,8 @@ namespace AntiAliasing
             else
             {
                 drawCircle.IsEnabled = false;
+                drawPolygon.IsEnabled = false;
+                drawRect.IsEnabled = false;
 
                 drawLine.Header = "End line";
 
@@ -96,6 +118,62 @@ namespace AntiAliasing
                 };
             }
 
+            if (!isDrawingRect)
+            {
+                drawRect.Header = "Start clipping rect";
+                drawRect.Click += (s, ee) =>
+                {
+                    drawingRectStart = p;
+
+                    isDrawingRect = true;
+                };
+            }
+            else
+            {
+                drawLine.IsEnabled = false;
+                drawPolygon.IsEnabled = false;
+                drawCircle.IsEnabled = false;
+
+                drawRect.Header = "End clipping rect";
+
+                drawRect.Click += (s, ee) =>
+                {
+                    canvas.DrawClippingRect(
+                        (int)Math.Min(drawingRectStart.X, p.X), (int)Math.Min(drawingRectStart.Y, p.Y),
+                        (int)Math.Max(drawingRectStart.X, p.X), (int)Math.Max(drawingRectStart.Y, p.Y));
+
+                    isDrawingRect = false;
+                };
+            }
+
+            if (!isDrawingPolygon)
+            {
+                drawPolygon.Header = "Start polygon";
+                drawPolygon.Click += (s, ee) =>
+                {
+                    isDrawingPolygon = true;
+                    polygonVertices.Add(p);
+                };
+            }
+            else
+            {
+                drawLine.IsEnabled = false;
+                drawRect.IsEnabled = false;
+                drawCircle.IsEnabled = false;
+
+                drawPolygon.Header = "End polygon";
+
+                drawPolygon.Click += (s, ee) =>
+                {
+                    polygonVertices.Add(p);
+                    isDrawingPolygon = false;
+
+                    canvas.DrawPolygon(polygonVertices);
+                    polygonVertices.Clear();
+                };
+            }
+
+
             drawCircle.Header = "Draw circle";
             drawCircle.Click += (s, ee) =>
             {
@@ -103,6 +181,8 @@ namespace AntiAliasing
             };
 
             drawContextMenu.Items.Add(drawLine);
+            drawContextMenu.Items.Add(drawRect);
+            drawContextMenu.Items.Add(drawPolygon);
             drawContextMenu.Items.Add(new Separator());
             drawContextMenu.Items.Add(drawCircle);
 
@@ -122,6 +202,11 @@ namespace AntiAliasing
         private void MenuItem_AntiAliasingUnchecked(object sender, RoutedEventArgs e)
         {
             canvas.DisableAntiAliasing();
+        }
+
+        private void Thickness_1(object sender, RoutedEventArgs e)
+        {
+            canvas.SetLineThickness(1);
         }
 
         private void Thickness_3(object sender, RoutedEventArgs e)
@@ -147,6 +232,11 @@ namespace AntiAliasing
         private void SuperSampleMenuItemCheck_Unchecked(object sender, RoutedEventArgs e)
         {
             canvas.DisableSuperSampling();
+        }
+
+        private void ClipMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            canvas.ClipToRect();
         }
     }
 }
