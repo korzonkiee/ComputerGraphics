@@ -26,7 +26,9 @@ namespace AntiAliasing
         private readonly Renderer renderer;
 
         private List<Figure> figures = new List<Figure>();
+
         private ClippingRectangle clippingRect;
+        private Polygon lastPolygonUnderCursor;
 
         private int lineThickness = 1;
 
@@ -80,8 +82,33 @@ namespace AntiAliasing
 
         public void DrawPolygon(List<Point> vertices)
         {
-            var polygon = new Polygon(vertices, Colors.Black, lineThickness);
+            var polygon = new Figures.Polygon(vertices, Colors.Black, lineThickness);
             renderer.Render(polygon);
+        }
+
+        public bool IsPointInsideSomePolygon(double x, double y)
+        {
+            lastPolygonUnderCursor = null;
+
+            foreach (var polygon in figures.Where(f => f is Polygon))
+            {
+                var p = polygon as Polygon;
+                if (p.ContainsPoint(x, y))
+                {
+                    lastPolygonUnderCursor = p;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void FillRectangleUnderCursor()
+        {
+            if (lastPolygonUnderCursor != null)
+            {
+                //lastPolygonUnderCursor.Fill();
+            }
         }
 
         public void ClipToRect()

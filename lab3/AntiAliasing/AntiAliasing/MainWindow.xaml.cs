@@ -32,6 +32,8 @@ namespace AntiAliasing
         private bool isDrawingRect = false;
         private bool isDrawingPolygon = false;
 
+        private bool showFillPolygonMenu = false;
+
         private List<Point> polygonVertices = new List<Point>();
 
         private Point drawingLineStart;
@@ -53,7 +55,9 @@ namespace AntiAliasing
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ButtonState == MouseButtonState.Pressed)
+            {
                 currentPoint = Mouse.GetMousePosition(CanvasImage);
+            }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -84,6 +88,11 @@ namespace AntiAliasing
             Container.ContextMenu = null;
 
             var p = Mouse.GetMousePosition(CanvasImage);
+            
+            if (canvas.IsPointInsideSomePolygon(p.X, p.Y))
+                showFillPolygonMenu = true;
+            else
+                showFillPolygonMenu = false;
 
             var drawContextMenu = new ContextMenu();
             var drawLine = new MenuItem();
@@ -185,6 +194,19 @@ namespace AntiAliasing
             drawContextMenu.Items.Add(drawPolygon);
             drawContextMenu.Items.Add(new Separator());
             drawContextMenu.Items.Add(drawCircle);
+
+            if (showFillPolygonMenu)
+            {
+                var fillPolygon = new MenuItem();
+                fillPolygon.Header = "Fill polygon";
+                fillPolygon.Click += (s, ee) =>
+                {
+                    canvas.FillRectangleUnderCursor();
+                };
+
+                drawContextMenu.Items.Add(new Separator());
+                drawContextMenu.Items.Add(fillPolygon);
+            }
 
             Container.ContextMenu = drawContextMenu;
         }

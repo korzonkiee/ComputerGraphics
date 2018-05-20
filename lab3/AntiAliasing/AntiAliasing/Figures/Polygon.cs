@@ -10,14 +10,14 @@ namespace AntiAliasing.Figures
 {
     public sealed class Polygon : Figure
     {
-        private readonly List<Point> vertices;
+        public List<Point> Vertices { get; private set; }
 
         public Color Color { get; }
         public int Thickness { get; private set; }
 
         public Polygon(List<Point> vertices, Color color, int thickness = 1)
         {
-            this.vertices = vertices;
+            this.Vertices = new List<Point>(vertices);
 
             Color = color;
             Thickness = thickness;
@@ -25,25 +25,25 @@ namespace AntiAliasing.Figures
 
         public override void AntiAliasingRender(BitmapData bitmapData)
         {
-            for (int i = 0; i < vertices.Count - 1; i++)
+            for (int i = 0; i < Vertices.Count - 1; i++)
             {
-                new Line(vertices[i].X, vertices[i].Y, vertices[i + 1].X, vertices[i + 1].Y, Color, Thickness)
+                new Line(Vertices[i].X, Vertices[i].Y, Vertices[i + 1].X, Vertices[i + 1].Y, Color, Thickness)
                     .AntiAliasingRender(bitmapData);
             }
 
-            new Line(vertices[vertices.Count - 1].X, vertices[vertices.Count - 1].Y, vertices[0].X, vertices[0].Y, Color, Thickness)
+            new Line(Vertices[Vertices.Count - 1].X, Vertices[Vertices.Count - 1].Y, Vertices[0].X, Vertices[0].Y, Color, Thickness)
                 .AntiAliasingRender(bitmapData);
         }
 
         public override void NormalRender(BitmapData bitmapData)
         {
-            for (int i = 0; i < vertices.Count - 1; i++)
+            for (int i = 0; i < Vertices.Count - 1; i++)
             {
-                new Line(vertices[i].X, vertices[i].Y, vertices[i + 1].X, vertices[i + 1].Y, Color, Thickness)
+                new Line(Vertices[i].X, Vertices[i].Y, Vertices[i + 1].X, Vertices[i + 1].Y, Color, Thickness)
                     .NormalRender(bitmapData);
             }
 
-            new Line(vertices[vertices.Count - 1].X, vertices[vertices.Count - 1].Y, vertices[0].X, vertices[0].Y, Color, Thickness)
+            new Line(Vertices[Vertices.Count - 1].X, Vertices[Vertices.Count - 1].Y, Vertices[0].X, Vertices[0].Y, Color, Thickness)
                 .NormalRender(bitmapData);
         }
 
@@ -60,7 +60,7 @@ namespace AntiAliasing.Figures
             else if (Thickness == 7)
                 _thick = 9;
 
-            var _ssVertices = vertices
+            var _ssVertices = Vertices
                 .Select(v =>
                 {
                     v.X = v.X * 2;
@@ -70,6 +70,53 @@ namespace AntiAliasing.Figures
                 }).ToList();
 
             return new Polygon(_ssVertices, Color, _thick);
+        }
+
+        public void Fill()
+        {
+            var indices = Vertices
+                .OrderBy(v => v.Y)
+                .Select(v => Vertices.IndexOf(v))
+                .ToArray();
+
+            var AET = new List<Point>();
+
+            int k = 0;
+            int N = Vertices.Count;
+            int i = indices[k];
+
+            int ymin = (int) Vertices[indices[0]].Y;
+            int ymax = (int) Vertices[indices[N - 1]].Y;
+
+            for (int y = ymin; y <= ymax;)
+            {
+                while (Vertices[i].Y == y)
+                {
+                    if (Vertices[i - 1].Y > Vertices[i].Y)
+                    {
+                        AET.Add(Vertices[i], Vertices[i - 1]);
+                    }
+
+                    if (Vertices[i + 1].Y > Vertices[i].Y)
+                    {
+
+                        AET.Add(Vertices[i], Vertices[i + 1]);
+                    }
+
+                    ++k;
+                    i = indices[k];
+                }
+
+                // sort AET by x value
+                // fill pixels between pairs of intersections
+                ++y;
+                // remove from AET edges for which ymax = y
+                foreach (var edge in AET)
+                {
+                    x += 1 / m
+                }
+            }
+}
         }
     }
 }
