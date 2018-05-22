@@ -40,6 +40,15 @@ namespace AntiAliasing
             RenderCompleted?.Invoke(this, figure);
         }
 
+        public void Fill(Polygon polygon)
+        {
+            BitmapData bitmapData = bitmap.Lock();
+            polygon.Fill(bitmapData);
+            bitmap.Unlock(bitmapData);
+
+            RenderCompleted?.Invoke(this, polygon);
+        }
+
         /// <summary>
         /// Renders set of figures on a canvas.
         /// </summary>

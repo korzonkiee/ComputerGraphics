@@ -107,7 +107,7 @@ namespace AntiAliasing
         {
             if (lastPolygonUnderCursor != null)
             {
-                //lastPolygonUnderCursor.Fill();
+                renderer.Fill(lastPolygonUnderCursor);
             }
         }
 

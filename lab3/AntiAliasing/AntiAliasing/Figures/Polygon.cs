@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AntiAliasing.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace AntiAliasing.Figures
     public sealed class Polygon : Figure
     {
         public List<Point> Vertices { get; private set; }
+
+        private double _y_min = double.MaxValue;
+        private double _y_max = double.MinValue;
 
         public Color Color { get; }
         public int Thickness { get; private set; }
@@ -72,51 +76,111 @@ namespace AntiAliasing.Figures
             return new Polygon(_ssVertices, Color, _thick);
         }
 
-        public void Fill()
+        public void Fill(BitmapData bitmapData)
         {
-            var indices = Vertices
-                .OrderBy(v => v.Y)
-                .Select(v => Vertices.IndexOf(v))
-                .ToArray();
+            var et = CreateEdgeTable();
+            var aet = new List<Edge>();
+            bool isSet = false;
 
-            var AET = new List<Point>();
-
-            int k = 0;
-            int N = Vertices.Count;
-            int i = indices[k];
-
-            int ymin = (int) Vertices[indices[0]].Y;
-            int ymax = (int) Vertices[indices[N - 1]].Y;
-
-            for (int y = ymin; y <= ymax;)
+            double y = _y_min;
+            while (y < _y_max)
             {
-                while (Vertices[i].Y == y)
+                try
                 {
-                    if (Vertices[i - 1].Y > Vertices[i].Y)
-                    {
-                        AET.Add(Vertices[i], Vertices[i - 1]);
-                    }
-
-                    if (Vertices[i + 1].Y > Vertices[i].Y)
-                    {
-
-                        AET.Add(Vertices[i], Vertices[i + 1]);
-                    }
-
-                    ++k;
-                    i = indices[k];
+                    aet.AddRange(et[y]);
                 }
+                catch { }
+                aet = aet.OrderBy(e => e.X_Min).ToList();
 
-                // sort AET by x value
-                // fill pixels between pairs of intersections
-                ++y;
-                // remove from AET edges for which ymax = y
-                foreach (var edge in AET)
+                for (int i = 0; i < aet.Count; i+=2)
                 {
-                    x += 1 / m
+                    var el = aet[i];
+                    var er = aet[i + 1];
+
+                    for(int x = (int) el.X_Min; x < Math.Ceiling(er.X_Min); x++)
+                    {
+                        bitmapData.SetPixel(x, (int)y, 0);
+                    }
+                }
+                y++;
+                aet = aet.Where(e => e.Y_Max != y).ToList();
+                for (int i = 0; i < aet.Count; i++)
+                {
+                    aet[i].X_Min += aet[i].X_Change;
                 }
             }
-}
+        }
+
+        public class Edge
+        {
+            public double X_Min { get; set; }
+            public double Y_Min { get; set; }
+            public double Y_Max { get; set; }
+            public double X_Change { get; set; }
+        }
+
+        private Dictionary<double, List<Edge>> CreateEdgeTable()
+        {
+            var et = new Dictionary<double, List<Edge>>();
+
+            for (int i = 0; i < Vertices.Count - 1; i++)
+            {
+                AddEdge(et, (int) Vertices[i].X, (int) Vertices[i].Y, (int) Vertices[i + 1].X, (int) Vertices[i + 1].Y);
+            }
+
+            AddEdge(et, (int) Vertices[Vertices.Count - 1].X, (int) Vertices[Vertices.Count - 1].Y, (int) Vertices[0].X, (int) Vertices[0].Y);
+            return et;
+        }
+
+        private void AddEdge(Dictionary<double, List<Edge>> et, int p1_x, int p1_y, int p2_x, int p2_y)
+        {
+            double dy = (p2_y - p1_y);
+            double dx = (p2_x - p1_x);
+
+            if (dy == 0)
+                return;
+
+            double change = dx / dy;
+
+            double y_max;
+            double y_min;
+            double x_min;
+
+            if (p1_y > p2_y)
+            {
+                y_max = p1_y;
+                y_min = p2_y;
+                x_min = p2_x;
+            }
+            else
+            {
+                y_max = p2_y;
+                y_min = p1_y;
+                x_min = p1_x;
+            }
+
+            if (y_max > _y_max)
+                _y_max = y_max;
+            if (y_min < _y_min)
+                _y_min = y_min;
+
+            var edge = new Edge()
+            {
+                X_Min = x_min,
+                Y_Max = y_max,
+                X_Change = change
+            };
+
+            try
+            {
+                var edgeBucket = et[y_min];
+                edgeBucket.Add(edge);
+            }
+            catch (KeyNotFoundException e)
+            {
+                var edgeBucket = new List<Edge>() { edge };
+                et[y_min] = edgeBucket;
+            }
         }
     }
 }
