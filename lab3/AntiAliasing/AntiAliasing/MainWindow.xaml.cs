@@ -174,7 +174,6 @@ namespace AntiAliasing
 
                 drawPolygon.Click += (s, ee) =>
                 {
-                    polygonVertices.Add(p);
                     isDrawingPolygon = false;
 
                     canvas.DrawPolygon(polygonVertices);

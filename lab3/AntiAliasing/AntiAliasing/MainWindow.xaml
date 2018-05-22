@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:AntiAliasing"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="600" Width="600">
+        ResizeMode="NoResize"
+        Title="MainWindow" Height="600" Width="800">
     <DockPanel Background="White">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Canvas">
@@ -24,9 +25,9 @@
                 <MenuItem Header="_7" Click="Thickness_7"/>
             </MenuItem>
         </Menu>
-        <StackPanel Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid Name="Container" Background="White" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 16, 0, 0">
-                <Image Width="512" Height="512" Name="CanvasImage"/>
+                <Image Width="800" Height="600" Name="CanvasImage"/>
             </Grid>
         </StackPanel>
     </DockPanel>
