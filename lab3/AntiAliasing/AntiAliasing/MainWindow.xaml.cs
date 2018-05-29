@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 
 using Point = System.Windows.Point;
 using Mouse = AntiAliasing.Extensions.Mouse;
+using Microsoft.Win32;
 
 namespace AntiAliasing
 {
@@ -27,6 +28,8 @@ namespace AntiAliasing
     public partial class MainWindow : Window
     {
         private readonly Canvas canvas;
+
+        private bool imageLoaded = false;
 
         private bool isDrawingLine = false;
         private bool isDrawingRect = false;
@@ -65,7 +68,7 @@ namespace AntiAliasing
             if (isDrawingPolygon)
                 return;
 
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed && !imageLoaded)
             {
                 var to = Mouse.GetMousePosition(CanvasImage);
                 canvas.DrawLine((int) currentPoint.X, (int) currentPoint.Y, (int) to.X, (int) to.Y);
@@ -80,6 +83,12 @@ namespace AntiAliasing
             {
                 var p = Mouse.GetMousePosition(CanvasImage);
                 polygonVertices.Add(p);
+            }
+
+            if (imageLoaded)
+            {
+                var p = Mouse.GetMousePosition(CanvasImage);
+                canvas.FillNeighbours(p, AntiAliasing.Figures.Colors.Black, AntiAliasing.Figures.Colors.Orange);
             }
         }
 
@@ -258,6 +267,23 @@ namespace AntiAliasing
         private void ClipMenuItem_Click(object sender, RoutedEventArgs e)
         {
             canvas.ClipToRect();
+        }
+
+        private void MenuItem_LoadImageClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog op = new OpenFileDialog();
+            op.Title = "Select a picture";
+            op.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
+              "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
+              "Portable Network Graphic (*.png)|*.png";
+            if (op.ShowDialog() == true)
+            {
+                Bitmap original = (Bitmap)System.Drawing.Image.FromFile(op.FileName);
+                Bitmap resized = new Bitmap(original, new System.Drawing.Size((int) CanvasImage.Width, (int) CanvasImage.Height));
+                canvas.RenderImage(resized);
+            }
+
+            imageLoaded = true;
         }
     }
 }

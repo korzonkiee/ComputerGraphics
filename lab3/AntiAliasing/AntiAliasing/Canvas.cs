@@ -11,6 +11,9 @@ using System.Windows.Controls;
 using Image = System.Windows.Controls.Image;
 using Rectangle = AntiAliasing.Figures.Rectangle;
 using Point = System.Windows.Point;
+using Color = AntiAliasing.Figures.Color;
+using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace AntiAliasing
 {
@@ -21,7 +24,7 @@ namespace AntiAliasing
     public class Canvas
     {
         private readonly Image image;
-        private readonly Bitmap bitmap;
+        private Bitmap bitmap;
 
         private readonly Renderer renderer;
 
@@ -160,6 +163,52 @@ namespace AntiAliasing
         {
             renderer.Clear();
             renderer.Render(figures);
+        }
+
+        public void RenderImage(Bitmap bmp)
+        {
+            this.bitmap = bmp;
+            image.UpdateBitmap(bmp);
+        }
+
+        public void FillNeighbours(Point p, Color boundary, Color @new)
+        {
+            int point_x = (int)p.X;
+            int point_y = (int)p.Y;
+
+            var data = bitmap.Lock();
+            var queue = new Queue<Tuple<int, int>>(data.Width * data.Height);
+
+            bool[,] visited = new bool[data.Width, data.Height];
+
+            queue.Enqueue(new Tuple<int, int>(point_x, point_y));
+
+            while (queue.Count > 0)
+            {
+                Tuple<int, int> tuple = queue.Dequeue();
+
+
+                if (tuple.Item1 < 0 || tuple.Item1 >= data.Width ||
+                    tuple.Item2 < 0 || tuple.Item2 >= data.Height)
+                {
+                    continue;
+                }
+
+                var currentPixel = data.GetPixel(tuple.Item1, tuple.Item2);
+                if (currentPixel != boundary && !visited[tuple.Item1, tuple.Item2])
+                {
+                    data.SetPixel(tuple.Item1, tuple.Item2, @new);
+                    visited[tuple.Item1, tuple.Item2] = true;
+
+                    queue.Enqueue(new Tuple<int, int>(tuple.Item1 - 1, tuple.Item2));
+                    queue.Enqueue(new Tuple<int, int>(tuple.Item1 + 1, tuple.Item2));
+                    queue.Enqueue(new Tuple<int, int>(tuple.Item1, tuple.Item2 - 1));
+                    queue.Enqueue(new Tuple<int, int>(tuple.Item1, tuple.Item2 + 1));
+                }
+            }            
+
+            bitmap.Unlock(data);
+            image.UpdateBitmap(bitmap);
         }
     }
 }
